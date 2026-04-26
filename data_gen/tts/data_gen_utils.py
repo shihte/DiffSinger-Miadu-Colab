@@ -11,7 +11,7 @@ from utils.pitch_utils import f0_to_coarse
 import struct
 try:
     import webrtcvad
-except ImportError:
+except Exception:
     webrtcvad = None
 from scipy.ndimage.morphology import binary_dilation
 import librosa

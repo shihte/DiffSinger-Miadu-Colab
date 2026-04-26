@@ -1,3 +1,9 @@
+import pkgutil
+if not hasattr(pkgutil, 'ImpImporter'):
+    class DummyImpImporter:
+        def __init__(self, path=None): pass
+    pkgutil.ImpImporter = DummyImpImporter
+
 import importlib
 from utils.hparams import set_hparams, hparams
 
