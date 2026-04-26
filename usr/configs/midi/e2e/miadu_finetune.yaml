@@ -45,7 +45,7 @@ predictor_layers: 5
 # 微調與保存策略 (Colab 安全增強)
 optimizer_args:
   lr: 0.00005 
-max_updates: 220000 
+max_updates: 250000 
 val_check_interval: 100  # 每 100 步保存一次
 num_ckpt_keep: 10        # 保留最近 10 個權重
 check_val_every_n_epoch: null # 禁用按 Epoch 保存，強制按步數

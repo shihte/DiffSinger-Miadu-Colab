@@ -33,7 +33,8 @@ class DiffSingerTask(DiffSpeechTask):
         self.dataset_cls = FastSpeechDataset
         self.vocoder: BaseVocoder = get_vocoder_cls(hparams)()
         if hparams.get('pe_enable') is not None and hparams['pe_enable']:
-            self.pe = PitchExtractor().cuda()
+            device = 'cuda' if torch.cuda.is_available() else ('mps' if torch.backends.mps.is_available() else 'cpu')
+            self.pe = PitchExtractor().to(device)
             utils.load_ckpt(self.pe, hparams['pe_ckpt'], 'model', strict=True)
             self.pe.eval()
 
