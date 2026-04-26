@@ -38,14 +38,17 @@ fmax: 16000
 fmin: 40
 timesteps: 1000
 K_step: 1000
-dilation_cycle_length: 4 # 1117 裡是 4
-dur_predictor_layers: 5 # 1117 裡是 5
-predictor_layers: 5 # 1117 裡是 5
+dilation_cycle_length: 4
+dur_predictor_layers: 5
+predictor_layers: 5
 
-# 微調策略
+# 微調與保存策略 (Colab 安全增強)
 optimizer_args:
   lr: 0.00005 
-max_updates: 210000 
+max_updates: 220000 
+val_check_interval: 500  # 每 500 步保存一次
+num_ckpt_keep: 10        # 保留最近 10 個權重
+check_val_every_n_epoch: null # 禁用按 Epoch 保存，強制按步數
 
 # 聲學模型細節
 pe_enable: false 
