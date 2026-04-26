@@ -429,8 +429,7 @@ class LatestModelCheckpoint(ModelCheckpoint):
         logs = logs or {}
         best_filepath = f'{self.filepath}/{self.prefix}_ckpt_best.pt'
         filepath = f'{self.filepath}/{self.prefix}_ckpt_steps_{self.task.global_step}.ckpt'
-        if self.verbose > 0:
-            logging.info(f'Step {self.task.global_step}: saving model to {filepath}')
+        print(f'| Step {self.task.global_step}: 正在保存模型至 {filepath}...')
         self._save_model(filepath)
         for old_ckpt in self.get_all_ckpts()[self.num_ckpt_keep:]:
             subprocess.check_call(f'rm -rf "{old_ckpt}"', shell=True)
