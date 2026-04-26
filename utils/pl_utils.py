@@ -416,34 +416,32 @@ class LatestModelCheckpoint(ModelCheckpoint):
                       key=lambda x: -int(re.findall('.*steps\_(\d+)\.ckpt', x)[0]))
 
     def on_epoch_end(self, epoch, logs=None):
-        self.epochs_since_last_check += 1
-        if self.epochs_since_last_check >= self.period:
-            self.epochs_since_last_check = 0
-            self._save_ckpt(epoch, logs)
+        # 移除門檻，只要被調用就執行保存
+        self._save_ckpt(epoch, logs)
 
     def on_validation_end(self, trainer, pl_module):
-        # 讓它在每 500 步驗證完後也嘗試保存
         self._save_ckpt(trainer.current_epoch, trainer.callback_metrics)
 
     def _save_ckpt(self, epoch, logs=None):
         logs = logs or {}
-        best_filepath = f'{self.filepath}/{self.prefix}_ckpt_best.pt'
         filepath = f'{self.filepath}/{self.prefix}_ckpt_steps_{self.task.global_step}.ckpt'
-        print(f'| Step {self.task.global_step}: 正在保存模型至 {filepath}...')
+        # 在 Colab 中打印明顯的提示
+        print(f'\n[Antigravity] 偵測到保存訊號，正在寫入 Checkpoint: {os.path.basename(filepath)}')
         self._save_model(filepath)
+        
+        # 保持最新的 K 個檔案
         for old_ckpt in self.get_all_ckpts()[self.num_ckpt_keep:]:
-            subprocess.check_call(f'rm -rf "{old_ckpt}"', shell=True)
-            if self.verbose > 0:
-                logging.info(f'Delete ckpt: {os.path.basename(old_ckpt)}')
+            try:
+                subprocess.check_call(f'rm -rf "{old_ckpt}"', shell=True)
+            except:
+                pass
+        
+        # 保存最優模型
         current = logs.get(self.monitor)
         if current is not None and self.save_best:
             if self.monitor_op(current, self.best):
                 self.best = current
-                if self.verbose > 0:
-                    logging.info(
-                        f'Step {self.task.global_step}: {self.monitor} reached'
-                        f' {current:0.5f} (best {self.best:0.5f}), saving model to'
-                        f' {best_filepath} as top 1')
+                best_filepath = f'{self.filepath}/{self.prefix}_ckpt_best.pt'
                 self._save_model(best_filepath)
                 np.save(f'{self.filepath}/best_valid.npy', [self.best])
 
