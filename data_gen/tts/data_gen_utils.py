@@ -9,7 +9,10 @@ from skimage.transform import resize
 from utils.text_encoder import TokenTextEncoder
 from utils.pitch_utils import f0_to_coarse
 import struct
-import webrtcvad
+try:
+    import webrtcvad
+except ImportError:
+    webrtcvad = None
 from scipy.ndimage.morphology import binary_dilation
 import librosa
 import numpy as np
@@ -64,11 +67,15 @@ def trim_long_silences(path, sr=None, return_raw_wav=False, norm=True, vad_max_s
 
     # Perform voice activation detection
     voice_flags = []
-    vad = webrtcvad.Vad(mode=3)
-    for window_start in range(0, len(wav), samples_per_window):
-        window_end = window_start + samples_per_window
-        voice_flags.append(vad.is_speech(pcm_wave[window_start * 2:window_end * 2],
-                                         sample_rate=sampling_rate))
+    if webrtcvad is not None:
+        vad = webrtcvad.Vad(mode=3)
+        for window_start in range(0, len(wav), samples_per_window):
+            window_end = window_start + samples_per_window
+            voice_flags.append(vad.is_speech(pcm_wave[window_start * 2:window_end * 2],
+                                             sample_rate=sampling_rate))
+    else:
+        # Fallback: Treat all as speech if webrtcvad is missing
+        voice_flags = [True] * (len(wav) // samples_per_window)
     voice_flags = np.array(voice_flags)
 
     # Smooth the voice detection with a moving average

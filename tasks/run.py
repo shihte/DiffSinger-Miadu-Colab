@@ -1,7 +1,3 @@
-import pkgutil
-if not hasattr(pkgutil, 'ImpImporter'):
-    pkgutil.ImpImporter = pkgutil.zipimporter
-
 import importlib
 from utils.hparams import set_hparams, hparams
 
