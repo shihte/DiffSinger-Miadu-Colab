@@ -185,7 +185,7 @@ class DiscriminatorP(torch.nn.Module):
         if use_cond:
             from utils.hparams import hparams
             t = hparams['hop_size']
-            self.cond_net = torch.nn.ConvTranspose1d(80, 1, t * 2, stride=t, padding=t // 2)
+            self.cond_net = torch.nn.ConvTranspose1d(hparams.get('audio_num_mel_bins', 80), 1, t * 2, stride=t, padding=t // 2)
             c_in = 2
 
         self.period = period
@@ -255,8 +255,9 @@ class DiscriminatorS(torch.nn.Module):
         super(DiscriminatorS, self).__init__()
         self.use_cond = use_cond
         if use_cond:
+            from utils.hparams import hparams
             t = np.prod(upsample_rates)
-            self.cond_net = torch.nn.ConvTranspose1d(80, 1, t * 2, stride=t, padding=t // 2)
+            self.cond_net = torch.nn.ConvTranspose1d(hparams.get('audio_num_mel_bins', 80), 1, t * 2, stride=t, padding=t // 2)
             c_in = 2
         norm_f = weight_norm if use_spectral_norm == False else spectral_norm
         self.convs = nn.ModuleList([

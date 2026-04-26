@@ -35,7 +35,7 @@ class DiffSingerE2EInfer(BaseSVSInfer):
         txt_tokens = sample['txt_tokens']  # [B, T_t]
         spk_id = sample.get('spk_ids')
         with torch.no_grad():
-            output = self.model(txt_tokens, spk_id=spk_id, ref_mels=None, infer=True,
+            output = self.model(txt_tokens, spk_embed=spk_id, ref_mels=None, infer=True,
                                 pitch_midi=sample['pitch_midi'], midi_dur=sample['midi_dur'],
                                 is_slur=sample['is_slur'])
             mel_out = output['mel_out']  # [B, T, 128]
