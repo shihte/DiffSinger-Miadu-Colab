@@ -1511,6 +1511,13 @@ class BaseTrainer:
                 # logs user requested information to logger
                 self.log_metrics(batch_step_metrics, grad_norm_dic)
 
+            # [Antigravity Nuclear Save] 強制硬存檔邏輯
+            if self.global_step > 0 and self.global_step % 100 == 0:
+                print(f"\n{'='*40}\n[Antigravity] 強制執行硬存檔 (Step {self.global_step})\n{'='*40}")
+                ckpt_path = f"{self.checkpoint_callback.filepath}/model_ckpt_steps_{self.global_step}.ckpt"
+                self.save_checkpoint(ckpt_path)
+                print(f"| 已成功寫入磁碟: {ckpt_path}\n")
+
             self.global_step += 1
             self.total_batch_idx += 1
 
