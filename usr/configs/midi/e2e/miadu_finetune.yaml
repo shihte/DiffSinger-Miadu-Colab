@@ -19,8 +19,8 @@ use_midi: true
 vocoder: HifiGAN
 vocoder_ckpt: checkpoints/nsf_hifigan_44.1k_hop512_128bin_2024.02
 
-# 硬件與性能 (Apple Silicon M2 最佳化)
-pl_trainer_accelerator: 'mps'
+# 硬件與性能 (Colab GPU 最佳化)
+pl_trainer_accelerator: 'gpu'
 pl_trainer_devices: 1
 pl_trainer_precision: '32-true'
 num_workers: 0 
