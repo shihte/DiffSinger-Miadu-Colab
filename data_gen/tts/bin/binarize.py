@@ -1,3 +1,7 @@
+import pkgutil
+if not hasattr(pkgutil, 'ImpImporter'):
+    pkgutil.ImpImporter = pkgutil.zipimporter
+
 import os
 
 os.environ["OMP_NUM_THREADS"] = "1"
