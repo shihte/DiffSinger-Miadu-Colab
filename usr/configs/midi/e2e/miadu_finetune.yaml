@@ -7,6 +7,7 @@ base_config:
 raw_data_dir: 'data/raw/miadu_finetune'
 binary_data_dir: 'data/binary/miadu_finetune'
 binarizer_cls: data_gen.singing.binarize.OpencpopBinarizer
+processed_data_dir: 'data/processed/miadu_finetune'
 dictionary: dictionaries/opencpop-strict.txt
 
 # 訓練設定
@@ -14,6 +15,7 @@ work_dir: 'checkpoints/miadu_finetune_v1'
 load_ckpt: 'checkpoints/1117_opencpop_ds1000_strict_pinyin/model_ckpt_steps_200000.ckpt'
 task_cls: usr.diffsinger_task.DiffSingerMIDITask
 use_midi: true
+reset_phone_dict: false
 
 # 聲碼器
 vocoder: HifiGAN
