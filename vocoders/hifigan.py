@@ -19,10 +19,15 @@ def load_model(config_path, checkpoint_path):
     ckpt_dict = torch.load(checkpoint_path, map_location="cpu")
     if '.yaml' in config_path:
         config = set_hparams(config_path, global_hparams=False)
-        state = ckpt_dict["state_dict"]["model_gen"]
+        if "state_dict" in ckpt_dict:
+            state = ckpt_dict["state_dict"]["model_gen"]
+        elif "generator" in ckpt_dict:
+            state = ckpt_dict["generator"]
+        else:
+            state = ckpt_dict
     elif '.json' in config_path:
         config = json.load(open(config_path, 'r'))
-        state = ckpt_dict["generator"]
+        state = ckpt_dict.get("generator", ckpt_dict)
     
     if 'use_pitch_embed' not in config:
         config['use_pitch_embed'] = True # Default for NSF-HiFiGAN
