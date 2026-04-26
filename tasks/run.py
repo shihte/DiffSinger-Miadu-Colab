@@ -1,3 +1,9 @@
+import os
+# 強制禁用 TensorFlow 的 GPU 可見性，防止它搶佔 PyTorch 的資源
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
+
 import pkgutil
 if not hasattr(pkgutil, 'ImpImporter'):
     class DummyImpImporter:
