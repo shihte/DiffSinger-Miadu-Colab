@@ -27,6 +27,7 @@ num_workers: 0
 ds_workers: 0 
 
 # 核心架構對齊 (1117 模型參數)
+audio_sample_rate: 44100
 audio_num_mel_bins: 128
 keep_bins: 128
 residual_channels: 512
@@ -54,3 +55,5 @@ check_val_every_n_epoch: null # 禁用按 Epoch 保存，強制按步數
 pe_enable: false 
 spec_min: [-5]
 spec_max: [0]
+mel_vmin: -6.0
+mel_vmax: 1.5
