@@ -1,0 +1,53 @@
+# 基礎設定
+base_config:
+- usr/configs/popcs_ds_beta6.yaml
+- usr/configs/midi/cascade/opencs/opencpop_statis.yaml
+
+# 數據路徑
+raw_data_dir: 'data/raw/miadu_finetune'
+binary_data_dir: 'data/binary/miadu_finetune'
+binarizer_cls: data_gen.singing.binarize.OpencpopBinarizer
+dictionary: dictionaries/opencpop-strict.txt
+
+# 訓練設定
+work_dir: 'checkpoints/miadu_finetune_v1'
+load_ckpt: 'checkpoints/1117_opencpop_ds1000_strict_pinyin/model_ckpt_steps_200000.ckpt'
+task_cls: usr.diffsinger_task.DiffSingerMIDITask
+use_midi: true
+
+# 聲碼器
+vocoder: HifiGAN
+vocoder_ckpt: checkpoints/nsf_hifigan_44.1k_hop512_128bin_2024.02
+
+# 硬件與性能 (Apple Silicon M2 最佳化)
+pl_trainer_accelerator: 'mps'
+pl_trainer_devices: 1
+pl_trainer_precision: '32-true'
+num_workers: 0 
+ds_workers: 0 
+
+# 核心架構對齊 (1117 模型參數)
+audio_num_mel_bins: 128
+keep_bins: 128
+residual_channels: 512
+hidden_size: 256
+fft_size: 2048
+hop_size: 512
+win_size: 2048
+fmax: 16000
+fmin: 40
+timesteps: 1000
+K_step: 1000
+dilation_cycle_length: 4 # 1117 裡是 4
+dur_predictor_layers: 5 # 1117 裡是 5
+predictor_layers: 5 # 1117 裡是 5
+
+# 微調策略
+optimizer_args:
+  lr: 0.00005 
+max_updates: 210000 
+
+# 聲學模型細節
+pe_enable: false 
+spec_min: [-5]
+spec_max: [0]

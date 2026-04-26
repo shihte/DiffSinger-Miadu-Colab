@@ -1,0 +1,13 @@
+.idea
+*.pyc
+__pycache__/
+*.sh
+local_tools/
+checkpoints/
+data/
+raw_data/
+infer_out/
+*.wav
+*.png
+*.zip
+.DS_Store
