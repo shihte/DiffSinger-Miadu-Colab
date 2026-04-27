@@ -56,6 +56,13 @@ val_check_interval: 100  # 每 100 步保存一次
 num_ckpt_keep: 10        # 保留最近 10 個權重
 check_val_every_n_epoch: null # 禁用按 Epoch 保存，強制按步數
 
+# 損失函數權重 (E2E 模式關鍵)
+lambda_f0: 1.0
+lambda_uv: 1.0
+lambda_ph_dur: 1.0
+lambda_word_dur: 1.0
+lambda_sent_dur: 1.0
+
 # 聲學模型細節
 pe_enable: false 
 spec_min: [-5]
