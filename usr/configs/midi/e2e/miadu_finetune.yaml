@@ -56,6 +56,10 @@ val_check_interval: 100  # 每 100 步保存一次
 num_ckpt_keep: 10        # 保留最近 10 個權重
 check_val_every_n_epoch: null # 禁用按 Epoch 保存，強制按步數
 
+# 推理穩定性增強
+use_gt_dur: true
+use_gt_f0: false # 音高還是讓模型自己預測，我們才聽得出進步
+
 # 損失函數權重 (E2E 模式關鍵)
 lambda_f0: 1.0
 lambda_uv: 1.0
