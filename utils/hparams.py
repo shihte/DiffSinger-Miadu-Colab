@@ -83,7 +83,8 @@ def set_hparams(config='', exp_name='', hparams_str='', print_hparams=True, glob
     hparams_.update(load_config(args.config))
     
     if not args.reset:
-        hparams_.update(saved_hparams)
+        saved_hparams.update(hparams_)
+        hparams_ = saved_hparams
     if args_work_dir != '':
         hparams_['work_dir'] = args_work_dir
 
