@@ -29,11 +29,14 @@ num_workers: 0
 ds_workers: 0 
 
 # 核心架構對齊 (1117 模型參數)
+test_num: 10
+valid_num: 10
 audio_sample_rate: 44100
 audio_num_mel_bins: 128
 keep_bins: 128
 residual_channels: 512
 hidden_size: 256
+test_prefixes: ['Alto-1', 'Soprano-1', '2044', '2086', '2092', '2093', '2100']
 fft_size: 2048
 hop_size: 512
 win_size: 2048
