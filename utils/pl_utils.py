@@ -427,7 +427,7 @@ class LatestModelCheckpoint(ModelCheckpoint):
         filepath = f'{self.filepath}/{self.prefix}_ckpt_steps_{self.task.global_step}.ckpt'
         # 在 Colab 中打印明顯的提示
         print(f'\n[Antigravity] 偵測到保存訊號，正在寫入 Checkpoint: {os.path.basename(filepath)}')
-        self._save_model(filepath)
+        self.save_function(filepath)
         
         # 保持最新的 K 個檔案
         for old_ckpt in self.get_all_ckpts()[self.num_ckpt_keep:]:
