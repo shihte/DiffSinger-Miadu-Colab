@@ -7,7 +7,7 @@ from tqdm import tqdm
 import json
 import glob
 import re
-from resemblyzer import VoiceEncoder
+# from resemblyzer import VoiceEncoder
 import traceback
 import numpy as np
 import pretty_midi
@@ -371,6 +371,14 @@ class OpencpopBinarizer(MidiSingingBinarizer):
 
     @classmethod
     def process_item(cls, item_name, ph, txt, tg_fn, wav_fn, spk_id, encoder, binarization_args):
+        from utils.hparams import hparams, set_hparams
+        if hparams.get('vocoder') is None:
+            set_hparams(config='usr/configs/midi/e2e/miadu_finetune.yaml', print_hparams=False)
+        if not hasattr(cls, 'item2ph'):
+            binarizer = cls()
+            binarizer.load_meta_data()
+            for k, v in binarizer.__dict__.items():
+                setattr(cls, k, v)
         if hparams['vocoder'] in VOCODERS:
             wav, mel = VOCODERS[hparams['vocoder']].wav2spec(wav_fn)
         else:
@@ -397,4 +405,11 @@ class OpencpopBinarizer(MidiSingingBinarizer):
 
 
 if __name__ == "__main__":
-    SingingBinarizer().process()
+    from utils.hparams import set_hparams
+    set_hparams()
+    
+    binarizer_cls_path = hparams.get("binarizer_cls", "data_gen.singing.binarize.SingingBinarizer")
+    pkg_name, cls_name = binarizer_cls_path.rsplit(".", 1)
+    mod = __import__(pkg_name, fromlist=[cls_name])
+    binarizer_cls = getattr(mod, cls_name)
+    binarizer_cls().process()
