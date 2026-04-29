@@ -22,7 +22,12 @@ class DiffSingerE2EInfer(BaseSVSInfer):
             spec_min=hparams['spec_min'], spec_max=hparams['spec_max'],
         )
         model.eval()
-        load_ckpt(model, hparams['work_dir'], 'model')
+        # [Antigravity] 強制指定測試 7,500 步模型
+        ckpt_path = 'checkpoints/miadu_finetune_v1/model_ckpt_steps_7500.ckpt'
+        if os.path.exists(ckpt_path):
+            utils.load_ckpt(model, ckpt_path, 'model')
+        else:
+            load_ckpt(model, hparams['work_dir'], 'model')
 
         if hparams.get('pe_enable') is not None and hparams['pe_enable']:
             self.pe = PitchExtractor().to(self.device)
