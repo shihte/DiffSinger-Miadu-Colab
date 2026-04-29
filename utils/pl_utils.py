@@ -796,8 +796,14 @@ class BaseTrainer:
         optimizer_states = checkpoint['optimizer_states']
         for optimizer, opt_state in zip(self.optimizers, optimizer_states):
             if optimizer is None:
-                return
+                continue
             optimizer.load_state_dict(opt_state)
+            # [Antigravity Fix] 強制將學習率恢復為設定檔中的數值，防止被 Checkpoint 覆蓋
+            if 'optimizer_args' in hparams and 'lr' in hparams['optimizer_args']:
+                target_lr = hparams['optimizer_args']['lr']
+                for param_group in optimizer.param_groups:
+                    param_group['lr'] = target_lr
+                print(f"| [Antigravity] 已強制將學習率重設為微調模式: {target_lr}")
 
             # move optimizer to GPU 1 weight at a time
             # avoids OOM
