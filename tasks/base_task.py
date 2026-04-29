@@ -158,7 +158,9 @@ class BaseTask(nn.Module):
         optimizer.step()
         optimizer.zero_grad()
         if self.scheduler is not None:
-            self.scheduler.step(self.global_step // hparams['accumulate_grad_batches'])
+            # [Antigravity Fix] 微調期間禁用排程器自動更新，避免學習率跳回底模預設值
+            # self.scheduler.step(self.global_step // hparams['accumulate_grad_batches'])
+            pass
 
     def on_epoch_end(self):
         loss_outputs = {k: round(v.avg, 4) for k, v in self.training_losses_meter.items()}

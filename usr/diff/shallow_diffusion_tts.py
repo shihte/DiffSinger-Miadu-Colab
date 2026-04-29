@@ -261,12 +261,11 @@ class GaussianDiffusion(nn.Module):
             if hparams.get('pndm_speedup'):
                 self.noise_list = deque(maxlen=4)
                 iteration_interval = hparams['pndm_speedup']
-                for i in tqdm(reversed(range(0, t, iteration_interval)), desc='sample time step',
-                              total=t // iteration_interval):
+                for i in reversed(range(0, t, iteration_interval)):
                     x = self.p_sample_plms(x, torch.full((b,), i, device=device, dtype=torch.long), iteration_interval,
                                            cond)
             else:
-                for i in tqdm(reversed(range(0, t)), desc='sample time step', total=t):
+                for i in reversed(range(0, t)):
                     x = self.p_sample(x, torch.full((b,), i, device=device, dtype=torch.long), cond)
             x = x[:, 0].transpose(1, 2)
             if mel2ph is not None:  # for singing
@@ -316,7 +315,7 @@ class OfflineGaussianDiffusion(GaussianDiffusion):
                 print('===> gaussion start.')
                 shape = (cond.shape[0], 1, self.mel_bins, cond.shape[2])
                 x = torch.randn(shape, device=device)
-            for i in tqdm(reversed(range(0, t)), desc='sample time step', total=t):
+            for i in reversed(range(0, t)):
                 x = self.p_sample(x, torch.full((b,), i, device=device, dtype=torch.long), cond)
             x = x[:, 0].transpose(1, 2)
             ret['mel_out'] = self.denorm_spec(x)
