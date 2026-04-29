@@ -26,6 +26,7 @@ import torch
 import torch.distributed as dist
 import torch.multiprocessing as mp
 import tqdm
+from utils.hparams import hparams
 from torch.optim.optimizer import Optimizer
 from packaging import version
 
