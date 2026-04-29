@@ -804,7 +804,7 @@ class BaseTrainer:
                 target_lr = hparams['optimizer_args']['lr']
                 for param_group in optimizer.param_groups:
                     param_group['lr'] = target_lr
-                print(f"| [Antigravity] 已強制將學習率重設為微調模式: {target_lr}")
+                print(f"| [Antigravity] 已強制將優化器學習率重設為: {target_lr}")
 
             # move optimizer to GPU 1 weight at a time
             # avoids OOM
@@ -818,6 +818,12 @@ class BaseTrainer:
         lr_schedulers = checkpoint['lr_schedulers']
         for scheduler, lrs_state in zip(self.lr_schedulers, lr_schedulers):
             scheduler.load_state_dict(lrs_state)
+            # [Antigravity Fix] 同步修正排程器的基準學習率
+            if 'optimizer_args' in hparams and 'lr' in hparams['optimizer_args']:
+                target_lr = hparams['optimizer_args']['lr']
+                if hasattr(scheduler, 'base_lrs'):
+                    scheduler.base_lrs = [target_lr] * len(scheduler.base_lrs)
+                print(f"| [Antigravity] 已強制將排程器基準學習率重設為: {target_lr}")
 
     # --------------------
     # MODEL SAVE CHECKPOINT
