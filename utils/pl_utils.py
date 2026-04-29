@@ -652,7 +652,8 @@ class BaseTrainer:
             pbar = tqdm.tqdm(desc='Validation sanity check',
                              total=self.num_sanity_val_steps * len(self.get_val_dataloaders()),
                              leave=False, position=2 * self.process_position,
-                             disable=not self.show_progress_bar, dynamic_ncols=True, unit='batch')
+                             disable=not self.show_progress_bar, dynamic_ncols=True, unit='batch',
+                             mininterval=5.0)
             self.main_progress_bar = pbar
             # dummy validation progress bar
             self.val_progress_bar = tqdm.tqdm(disable=True)
@@ -666,7 +667,7 @@ class BaseTrainer:
         # init progress bar
         pbar = tqdm.tqdm(leave=True, position=2 * self.process_position,
                          disable=not self.show_progress_bar, dynamic_ncols=True, unit='batch',
-                         file=sys.stdout)
+                         file=sys.stdout, mininterval=5.0)
         self.main_progress_bar = pbar
 
         # clear cache before training
@@ -1331,9 +1332,9 @@ class BaseTrainer:
         # main progress bar will already be closed when testing so initial position is free
         position = 2 * self.process_position + (not test)
         desc = 'Testing' if test else 'Validating'
-        pbar = tqdm.tqdm(desc=desc, total=max_batches, leave=test, position=position,
+        pbar = tqdm.tqdm(desc=desc, total=max_batches, leave=False, position=position,
                          disable=not self.show_progress_bar, dynamic_ncols=True,
-                         unit='batch', file=sys.stdout)
+                         unit='batch', file=sys.stdout, mininterval=5.0)
         setattr(self, f'{"test" if test else "val"}_progress_bar', pbar)
 
         # run evaluation
