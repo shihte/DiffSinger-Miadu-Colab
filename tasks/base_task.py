@@ -157,9 +157,14 @@ class BaseTask(nn.Module):
     def optimizer_step(self, epoch, batch_idx, optimizer, optimizer_idx):
         optimizer.step()
         optimizer.zero_grad()
+        # [Antigravity Nuclear Fix] 每一步都強行把學習率鎖死
+        forced_lr = hparams.get('optimizer_args', {}).get('lr', hparams.get('lr', 5e-5))
+        for param_group in optimizer.param_groups:
+            param_group['lr'] = forced_lr
+        
         if self.scheduler is not None:
-            # [Antigravity Fix] 微調期間禁用排程器自動更新，避免學習率跳回底模預設值
-            # self.scheduler.step(self.global_step // hparams['accumulate_grad_batches'])
+            # [Antigravity Fix] 微調期間禁用排程器自動更新
+            pass
             pass
 
     def on_epoch_end(self):
@@ -199,7 +204,12 @@ class BaseTask(nn.Module):
         raise NotImplementedError
 
     def build_optimizer(self, model):
-        raise NotImplementedError
+        # [Antigravity Fix] 優先讀取微調設定檔中的學習率
+        lr = hparams.get('optimizer_args', {}).get('lr', hparams.get('lr', 0.001))
+        self.optimizer = optimizer = torch.optim.AdamW(
+            model.parameters(),
+            lr=lr)
+        return optimizer
 
     def configure_optimizers(self):
         optm = self.build_optimizer(self.model)
@@ -227,6 +237,11 @@ class BaseTask(nn.Module):
         np.random.seed(hparams['seed'])
         task = cls()
         work_dir = hparams['work_dir']
+        
+        # [Antigravity Fix] 強制消滅全域 lr 中的 0.001
+        if 'optimizer_args' in hparams and 'lr' in hparams['optimizer_args']:
+            hparams['lr'] = hparams['optimizer_args']['lr']
+
         trainer = BaseTrainer(checkpoint_callback=LatestModelCheckpoint(
                                   filepath=work_dir,
                                   verbose=True,
