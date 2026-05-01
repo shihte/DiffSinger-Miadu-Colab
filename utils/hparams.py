@@ -99,8 +99,17 @@ def set_hparams(config='', exp_name='', hparams_str='', print_hparams=True, glob
                 hparams_[k] = type(hparams_[k])(v)
 
     if args_work_dir != '' and not args.infer:
-        # [Antigravity Fix] 確保 config.yaml 存檔路徑與 work_dir 一致，避免絕對路徑時找不到資料夾
+        # [Antigravity Fix] 確保 config.yaml 存檔路徑與 work_dir 一致
         actual_ckpt_config_path = os.path.join(hparams_['work_dir'], 'config.yaml')
+        
+        # [Antigravity Path Guard] 強制檢查雲端硬碟路徑是否存在，防止存錯帳號
+        if hparams_['work_dir'].startswith('/content/drive/MyDrive'):
+            base_drive_path = '/content/drive/MyDrive/DiffSinger_Upload_This'
+            if not os.path.exists(base_drive_path):
+                print(f"\n❌ 錯誤：找不到雲端硬碟捷徑！路徑應為: {base_drive_path}")
+                print("請確認：1. 已掛載 Drive  2. 捷徑名稱正確且在根目錄  3. 捷徑指向主帳號資料夾\n")
+                raise FileNotFoundError(f"Google Drive shortcut NOT FOUND at {base_drive_path}")
+
         if not os.path.exists(actual_ckpt_config_path) or args.reset:
             os.makedirs(hparams_['work_dir'], exist_ok=True)
             with open(actual_ckpt_config_path, 'w') as f:
