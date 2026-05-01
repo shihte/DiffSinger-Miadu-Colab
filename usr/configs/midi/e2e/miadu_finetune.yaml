@@ -54,7 +54,7 @@ optimizer_args:
 max_updates: 220000 
 warmup_updates: 500
 val_check_interval: 500  # 每 500 步驗證一次
-num_ckpt_keep: 100        # 開啟無限存檔模式，方便隨時回檔
+num_ckpt_keep: 5         # 修正空間問題：縮減存檔數量，防止 15GB 爆掉導致同步失敗
 check_val_every_n_epoch: null # 禁用按 Epoch 保存，強制按步數
 
 # 推理穩定性增強
