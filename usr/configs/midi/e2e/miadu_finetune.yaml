@@ -12,14 +12,14 @@ dictionary: dictionaries/opencpop-strict.txt
 
 # 訓練設定
 work_dir: '/content/drive/MyDrive/DiffSinger_Upload_This/checkpoints_finetune/miadu_finetune_v1'
-load_ckpt: 'checkpoints/1117_opencpop_ds1000_strict_pinyin/model_ckpt_steps_200000.ckpt'
+load_ckpt: '/content/drive/MyDrive/DiffSinger_Upload_This/checkpoints/1117_opencpop_ds1000_strict_pinyin/model_ckpt_steps_200000.ckpt'
 task_cls: usr.diffsinger_task.DiffSingerMIDITask
 use_midi: true
 reset_phone_dict: false
 
 # 聲碼器
 vocoder: HifiGAN
-vocoder_ckpt: checkpoints/nsf_hifigan_44.1k_hop512_128bin_2024.02
+vocoder_ckpt: /content/drive/MyDrive/DiffSinger_Upload_This/checkpoints/nsf_hifigan_44.1k_hop512_128bin_2024.02
 
 # 硬件與性能 (Colab GPU 最佳化)
 pl_trainer_accelerator: 'gpu'
