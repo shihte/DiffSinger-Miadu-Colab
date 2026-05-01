@@ -139,9 +139,8 @@ class BaseTask(nn.Module):
         self.training_losses_meter['total_loss'].update(total_loss.item())
 
         try:
-            log_outputs['lr'] = self.scheduler.get_lr()
-            if isinstance(log_outputs['lr'], list):
-                log_outputs['lr'] = log_outputs['lr'][0]
+            # [Antigravity] 讀取真實注入的學習率，確保進度條顯示 0.001 而不是假數值
+            log_outputs['lr'] = self.trainer.optimizers[0].param_groups[0]['lr']
         except:
             pass
 
