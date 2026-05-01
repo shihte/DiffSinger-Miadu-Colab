@@ -155,17 +155,46 @@ class BaseTask(nn.Module):
         }
 
     def optimizer_step(self, epoch, batch_idx, optimizer, optimizer_idx):
+        # [Antigravity Adaptive Tune] 智慧型階段導航系統
+        step = self.global_step
+        
+        if step < 500:
+            # 階段 0：破冰發聲期 - 快速學會說話
+            target_lr = 5e-4
+            f0_w, dur_w = 1.0, 1.0
+            phase = "PHASE 0: BREAKING ICE"
+        elif step < 2000:
+            # 階段 1：地基期 - 建立基本節奏音準
+            target_lr = 2e-4
+            f0_w, dur_w = 1.5, 1.5
+            phase = "PHASE 1: FOUNDATION"
+        elif step < 5000:
+            # 階段 2：精煉期 - 穩定對齊
+            target_lr = 1e-4
+            f0_w, dur_w = 1.5, 1.5
+            phase = "PHASE 2: REFINEMENT"
+        else:
+            # 階段 3：微雕期 - 解決搶拍走音
+            target_lr = 5e-5
+            f0_w, dur_w = 2.0, 2.0
+            phase = "PHASE 3: POLISHING"
+
+        # 強制注入 LR
+        for pg in optimizer.param_groups:
+            pg['lr'] = target_lr
+        
+        # 強制注入 Loss 權重
+        hparams['lambda_f0'] = f0_w
+        hparams['lambda_ph_dur'] = dur_w
+        hparams['lambda_word_dur'] = dur_w
+        hparams['lambda_sent_dur'] = dur_w
+
+        # 每 100 步在後台打印一次狀態
+        if step % 100 == 0:
+            print(f"\n[Antigravity {phase}] Step: {step} | LR: {target_lr} | F0_W: {f0_w} | DUR_W: {dur_w}")
+
         optimizer.step()
         optimizer.zero_grad()
-        # [Antigravity Nuclear Fix] 每一步都強行把學習率鎖死
-        forced_lr = hparams.get('optimizer_args', {}).get('lr', hparams.get('lr', 5e-5))
-        for param_group in optimizer.param_groups:
-            param_group['lr'] = forced_lr
-        
-        if self.scheduler is not None:
-            # [Antigravity Fix] 微調期間禁用排程器自動更新
-            pass
-            pass
 
     def on_epoch_end(self):
         loss_outputs = {k: round(v.avg, 4) for k, v in self.training_losses_meter.items()}
