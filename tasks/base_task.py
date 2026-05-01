@@ -153,49 +153,29 @@ class BaseTask(nn.Module):
             'log': tb_log
         }
 
+    def get_adaptive_params(self, step):
+        if step < 800:
+            return 1e-3, 1.5, 1.5, "PHASE 0: SUPER BREAK ICE"
+        elif step < 2500:
+            return 2e-4, 1.5, 1.5, "PHASE 1: FOUNDATION"
+        elif step < 5000:
+            return 1e-4, 2.0, 2.0, "PHASE 2: POLISHING"
+        else:
+            return 5e-5, 2.0, 2.0, "PHASE 3: FINE TUNE"
+
     def on_train_batch_start(self, *args, **kwargs):
         # [Antigravity] 每步強鎖 LR
         step = self.global_step
-        target_lr = 0.001 if step < 800 else 0.0002
-        
-        # 遍歷所有優化器確保覆蓋
+        target_lr, _, _, _ = self.get_adaptive_params(step)
         for opt in self.trainer.optimizers:
             for pg in opt.param_groups:
                 pg['lr'] = target_lr
-        
-        if step % 50 == 0:
-            print(f"\n[Antigravity DEBUG] Global Step: {step} | Real LR in Optimizer: {self.trainer.optimizers[0].param_groups[0]['lr']}")
-        
         return super().on_train_batch_start(*args, **kwargs)
 
     def optimizer_step(self, *args, **kwargs):
         # [Antigravity] 確保 optimizer_step 也不會跑掉
         step = self.global_step
-        
-        if step < 800:
-            # 階段 0：強效破冰期 - 用預設最高速強行震開咬字 (保持節奏權重)
-            target_lr = 1e-3
-            f0_w, dur_w = 1.5, 1.5
-            phase = "PHASE 0: SUPER BREAK ICE"
-        elif step < 2500:
-            # 階段 1：地基穩固期 - 降速並加強節奏音準
-            target_lr = 2e-4
-            f0_w, dur_w = 1.5, 1.5
-            phase = "PHASE 1: FOUNDATION"
-        elif step < 5000:
-            # 階段 2：精煉期 - 穩定對齊
-            target_lr = 1e-4
-            f0_w, dur_w = 1.5, 1.5
-            phase = "PHASE 2: REFINEMENT"
-        else:
-            # 階段 3：微雕期 - 解決搶拍走音
-            target_lr = 5e-5
-            f0_w, dur_w = 2.0, 2.0
-            phase = "PHASE 3: POLISHING"
-
-        # 強制注入 LR
-        for pg in optimizer.param_groups:
-            pg['lr'] = target_lr
+        target_lr, f0_w, dur_w, phase = self.get_adaptive_params(step)
         
         # 強制注入 Loss 權重
         hparams['lambda_f0'] = f0_w
@@ -203,12 +183,16 @@ class BaseTask(nn.Module):
         hparams['lambda_word_dur'] = dur_w
         hparams['lambda_sent_dur'] = dur_w
 
-        # 每 100 步在後台打印一次狀態
-        if step % 100 == 0:
-            print(f"\n[Antigravity {phase}] Step: {step} | LR: {target_lr} | F0_W: {f0_w} | DUR_W: {dur_w}")
+        # 執行原本的優化器步驟 (這會更新權重)
+        super().optimizer_step(*args, **kwargs)
 
-        optimizer.step()
-        optimizer.zero_grad()
+        # 【暴力鎖定】在步驟後再次強力撥回真實 LR
+        for opt in self.trainer.optimizers:
+            for pg in opt.param_groups:
+                pg['lr'] = target_lr
+        
+        if step % 100 == 0:
+            print(f"\n[Antigravity {phase}] Step: {step} | Real LR: {target_lr} | F0_W: {f0_w} | DUR_W: {dur_w}")
 
     def on_epoch_end(self):
         loss_outputs = {k: round(v.avg, 4) for k, v in self.training_losses_meter.items()}
