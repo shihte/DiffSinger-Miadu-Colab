@@ -98,10 +98,13 @@ def set_hparams(config='', exp_name='', hparams_str='', print_hparams=True, glob
             else:
                 hparams_[k] = type(hparams_[k])(v)
 
-    if args_work_dir != '' and (not os.path.exists(ckpt_config_path) or args.reset) and not args.infer:
-        os.makedirs(hparams_['work_dir'], exist_ok=True)
-        with open(ckpt_config_path, 'w') as f:
-            yaml.safe_dump(hparams_, f)
+    if args_work_dir != '' and not args.infer:
+        # [Antigravity Fix] 確保 config.yaml 存檔路徑與 work_dir 一致，避免絕對路徑時找不到資料夾
+        actual_ckpt_config_path = os.path.join(hparams_['work_dir'], 'config.yaml')
+        if not os.path.exists(actual_ckpt_config_path) or args.reset:
+            os.makedirs(hparams_['work_dir'], exist_ok=True)
+            with open(actual_ckpt_config_path, 'w') as f:
+                yaml.safe_dump(hparams_, f)
 
     hparams_['infer'] = args.infer
     hparams_['debug'] = args.debug
