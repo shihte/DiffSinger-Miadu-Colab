@@ -158,13 +158,13 @@ class BaseTask(nn.Module):
         # [Antigravity Adaptive Tune] 智慧型階段導航系統
         step = self.global_step
         
-        if step < 500:
-            # 階段 0：破冰發聲期 - 快速學會說話
-            target_lr = 5e-4
-            f0_w, dur_w = 1.0, 1.0
-            phase = "PHASE 0: BREAKING ICE"
-        elif step < 2000:
-            # 階段 1：地基期 - 建立基本節奏音準
+        if step < 800:
+            # 階段 0：強效破冰期 - 用預設最高速強行震開咬字 (保持節奏權重)
+            target_lr = 1e-3
+            f0_w, dur_w = 1.5, 1.5
+            phase = "PHASE 0: SUPER BREAK ICE"
+        elif step < 2500:
+            # 階段 1：地基穩固期 - 降速並加強節奏音準
             target_lr = 2e-4
             f0_w, dur_w = 1.5, 1.5
             phase = "PHASE 1: FOUNDATION"
