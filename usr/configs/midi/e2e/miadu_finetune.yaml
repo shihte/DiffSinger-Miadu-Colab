@@ -50,7 +50,7 @@ predictor_layers: 5
 
 # 微調與保存策略 (Colab 安全增強)
 optimizer_args:
-  lr: 0.0002 
+  lr: 0.001 
 max_updates: 220000 
 warmup_updates: 500
 val_check_interval: 500  # 每 500 步驗證一次
