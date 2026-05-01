@@ -153,7 +153,22 @@ class BaseTask(nn.Module):
             'log': tb_log
         }
 
-    def optimizer_step(self, epoch, batch_idx, optimizer, optimizer_idx):
+    def on_train_batch_start(self, batch, batch_idx):
+        # [Antigravity] 每一批次開始前，強制同步智慧型參數
+        step = self.global_step
+        target_lr = 0.0002 # 預設
+        
+        if step < 800:
+            target_lr = 1e-3
+        elif step < 2500:
+            target_lr = 2e-4
+            
+        for param_group in self.trainer.optimizers[0].param_groups:
+            param_group['lr'] = target_lr
+        
+        super().on_train_batch_start(batch, batch_idx)
+
+    def optimizer_step(self, *args, **kwargs):
         # [Antigravity Adaptive Tune] 智慧型階段導航系統
         step = self.global_step
         
