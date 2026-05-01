@@ -86,7 +86,9 @@ def set_hparams(config='', exp_name='', hparams_str='', print_hparams=True, glob
         saved_hparams.update(hparams_)
         hparams_ = saved_hparams
     if args_work_dir != '':
-        hparams_['work_dir'] = args_work_dir
+        # [Antigravity Fix] 如果 YAML 裡已經設定了絕對路徑，則不予覆蓋，防止儲存點跳回小帳號
+        if not hparams_.get('work_dir', '').startswith('/'):
+            hparams_['work_dir'] = args_work_dir
 
     if args.hparams != "":
         for new_hparam in args.hparams.split(","):
