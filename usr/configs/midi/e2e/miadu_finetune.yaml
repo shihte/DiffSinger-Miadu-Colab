@@ -11,8 +11,8 @@ processed_data_dir: 'data/processed/miadu_finetune'
 dictionary: dictionaries/opencpop-strict.txt
 
 # 訓練設定
-work_dir: '/content/drive/MyDrive/DiffSinger_Colab/checkpoints/miadu_finetune_v1'
-load_ckpt: '/content/drive/MyDrive/DiffSinger_Colab/checkpoints/miadu_finetune_v1/model_ckpt_steps_5100.ckpt'
+work_dir: '/content/drive/MyDrive/DiffSinger_Main/miadu_finetune_v1'
+load_ckpt: 'checkpoints/1117_opencpop_ds1000_strict_pinyin/model_ckpt_steps_200000.ckpt'
 task_cls: usr.diffsinger_task.DiffSingerMIDITask
 use_midi: true
 reset_phone_dict: false
