@@ -54,7 +54,7 @@ optimizer_args:
 max_updates: 220000 
 warmup_updates: 500
 val_check_interval: 500  # 每 500 步驗證一次
-num_ckpt_keep: 100        # 開回無限模式 (請記得手動搬移檔案，防止 15GB 爆掉)
+num_ckpt_keep: 10        # 鎖定 10 個存檔 (約 8.4GB)，確保 15GB 小帳空間不爆掉
 check_val_every_n_epoch: null # 禁用按 Epoch 保存，強制按步數
 
 # 推理穩定性增強
