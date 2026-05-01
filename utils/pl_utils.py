@@ -426,9 +426,14 @@ class LatestModelCheckpoint(ModelCheckpoint):
     def _save_ckpt(self, epoch, logs=None):
         logs = logs or {}
         filepath = f'{self.filepath}/{self.prefix}_ckpt_steps_{self.task.global_step}.ckpt'
-        # 在 Colab 中打印明顯的提示
-        print(f'\n[Antigravity] 偵測到保存訊號，正在寫入 Checkpoint: {os.path.basename(filepath)}')
+        # [Antigravity] 動態顯示完整路徑，方便驗證儲存位置
+        print(f'\n========================================')
+        print(f'[Antigravity] 正在寫入 Checkpoint...')
+        print(f'| 目標路徑: {filepath}')
         self.save_function(filepath)
+        if os.path.exists(filepath):
+            print(f'| [成功] 已成功寫入磁碟 ({os.path.getsize(filepath) // 1024 // 1024} MB)')
+        print(f'========================================\n')
         
         # 保持最新的 K 個檔案
         for old_ckpt in self.get_all_ckpts()[self.num_ckpt_keep:]:
