@@ -22,13 +22,13 @@ class DiffSingerE2EInfer(BaseSVSInfer):
             spec_min=hparams['spec_min'], spec_max=hparams['spec_max'],
         )
         model.eval()
-        # [Antigravity] 指向 v2 重生計畫中的 1,000 步模型
-        ckpt_path = '/content/drive/MyDrive/DiffSinger_Upload_This/checkpoints_finetune/miadu_finetune_v2/model_ckpt_steps_1000.ckpt'
+        # [Antigravity] 指向 v6 計畫中的 2,000 步里程碑模型 (0.001 破冰 -> 0.0002 穩固)
+        ckpt_path = '/content/drive/MyDrive/DiffSinger_Upload_This/checkpoints_finetune/miadu_finetune_v6/model_ckpt_steps_2000.ckpt'
         if os.path.exists(ckpt_path):
             utils.load_ckpt(model, ckpt_path, 'model')
         else:
             # 如果本地環境測試，嘗試找下載資料夾
-            local_ckpt = os.path.expanduser('~/Downloads/model_ckpt_steps_800.ckpt')
+            local_ckpt = os.path.expanduser('~/Downloads/model_ckpt_steps_2000.ckpt')
             if os.path.exists(local_ckpt):
                 utils.load_ckpt(model, local_ckpt, 'model')
             else:

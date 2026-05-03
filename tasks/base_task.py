@@ -154,14 +154,14 @@ class BaseTask(nn.Module):
         }
 
     def get_adaptive_params(self, step):
-        if step < 800:
-            return 1e-3, 1.5, 1.5, "PHASE 0: SUPER BREAK ICE"
-        elif step < 2500:
+        if step < 3000:
+            # [V7] 極限破冰期：延長至 3000 步，稍微降低節奏權重 (1.2) 讓路給發音
+            return 1e-3, 1.2, 1.2, "PHASE 0: EXTREME BREAK ICE"
+        elif step < 6000:
+            # [V7] 定型期：恢復 1.5 權重穩固節奏
             return 2e-4, 1.5, 1.5, "PHASE 1: FOUNDATION"
-        elif step < 5000:
-            return 1e-4, 2.0, 2.0, "PHASE 2: POLISHING"
         else:
-            return 5e-5, 2.0, 2.0, "PHASE 3: FINE TUNE"
+            return 5e-5, 2.0, 2.0, "PHASE 2: POLISHING"
 
     def on_train_batch_start(self, *args, **kwargs):
         # [Antigravity] 每步強鎖 LR

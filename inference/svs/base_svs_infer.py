@@ -56,6 +56,11 @@ class BaseSVSInfer:
 
     def build_vocoder(self):
         base_dir = hparams['vocoder_ckpt']
+        if not os.path.exists(base_dir) and base_dir.startswith('/content/drive'):
+            # [Antigravity] 本機環境回退路徑
+            local_base_dir = os.path.join(os.getcwd(), 'DiffSinger_Upload_This', 'checkpoints', os.path.basename(base_dir))
+            if os.path.exists(local_base_dir):
+                base_dir = local_base_dir
         if os.path.exists(base_dir) and os.path.isfile(base_dir):
             ckpt = base_dir
             base_dir = os.path.dirname(base_dir)
